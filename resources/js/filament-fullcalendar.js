@@ -1,5 +1,5 @@
 import { Calendar } from '@fullcalendar/core'
-import interactionPlugin from '@fullcalendar/interaction'
+import interactionPlugin, { ThirdPartyDraggable } from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
@@ -31,6 +31,17 @@ export default function fullcalendar({
 }) {
     return {
         init() {
+          var containerEl = document.getElementById('external-events');
+
+            new Draggable(containerEl, {
+            itemSelector: '.fc-event',
+            eventData: function(eventEl) {
+              return {
+                title: eventEl.innerText
+              };
+            }
+          });
+
             /** @type Calendar */
             const calendar = new Calendar(this.$el, {
                 headerToolbar: {
@@ -39,6 +50,7 @@ export default function fullcalendar({
                     'right': 'dayGridMonth,dayGridWeek,dayGridDay',
                 },
                 plugins: plugins.map(plugin => availablePlugins[plugin]),
+                droppable: true,
                 locale,
                 schedulerLicenseKey,
                 timeZone,
