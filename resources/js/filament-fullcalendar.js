@@ -1,5 +1,5 @@
 import { Calendar } from '@fullcalendar/core'
-import interactionPlugin, { ThirdPartyDraggable } from '@fullcalendar/interaction';
+import interactionPlugin, { Draggable } from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
@@ -31,16 +31,16 @@ export default function fullcalendar({
 }) {
     return {
         init() {
-          var containerEl = document.getElementById('external-events');
+            var containerEl = document.getElementById('external-events');
 
             new Draggable(containerEl, {
-            itemSelector: '.fc-event',
-            eventData: function(eventEl) {
-              return {
-                title: eventEl.innerText
-              };
-            }
-          });
+                itemSelector: '.fc-event',
+                eventData: function(eventEl) {
+                    return {
+                        title: eventEl.innerText
+                    };
+                }
+            });
 
             /** @type Calendar */
             const calendar = new Calendar(this.$el, {
@@ -98,6 +98,16 @@ export default function fullcalendar({
                 select: ({ startStr, endStr, allDay, view, resource }) => {
                     if (!selectable) return;
                     this.$wire.onDateSelect(startStr, endStr, allDay, view, resource)
+                },
+                drop: async ({ allDay, date, dateStr, draggedEl, jsEvent, resource, view}) => {
+                    let saved = this.$wire.onDrop(allDay, date, dateStr, draggedEl.dataset.event, jsEvent, resource, view);
+
+                    if (saved) {
+                        calendar.refetchEvents();
+                    }
+                },
+                eventReceive: ({ event, relatedEvents, revert, draggedEl, view }) => {
+                    event.remove()
                 },
             })
 
