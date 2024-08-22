@@ -61,4 +61,18 @@ trait InteractsWithRawJS
             null
         JS;
     }
+
+    public function resourceLaneContent(): string
+    {
+        return <<<JS
+            null
+        JS;
+    }
+
+    public function resourceLabelContent(): string
+    {
+        return <<<JS
+            null
+        JS;
+    }
 }
