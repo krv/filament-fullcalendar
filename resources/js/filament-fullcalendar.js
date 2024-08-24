@@ -35,12 +35,7 @@ export default function fullcalendar({
             var containerEl = document.getElementById('external-events');
 
             new Draggable(containerEl, {
-                itemSelector: '.fc-event',
-                eventData: function(eventEl) {
-                    return {
-                        title: eventEl.innerText
-                    };
-                }
+                itemSelector: '.fc-event'
             });
 
             /** @type Calendar */
