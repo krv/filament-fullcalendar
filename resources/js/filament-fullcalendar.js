@@ -59,14 +59,8 @@ export default function fullcalendar({
                 eventDidMount,
                 eventWillUnmount,
                 resourceLabelContent,
-                resources: (fetchInfo, successCallback, failureCallback) => {
-                    console.log('fetching resources');
-                    console.log(fetchInfo.start);
-                    console.log(fetchInfo.end);
-                    console.log('testing ping');
-                    console.log(this.$wire.testping())
-
-                    this.$wire.fetchResources({ start: fetchInfo.start, end: fetchInfo.end, timeZone: fetchInfo.timeZone })
+                resources: (info, successCallback, failureCallback) => {
+                    this.$wire.fetchResources({ start: info.start, end: info.end, timeZone: info.timeZone })
                       .then(successCallback)
                       .catch(failureCallback)
                 },
@@ -111,7 +105,6 @@ export default function fullcalendar({
                     let saved = this.$wire.onDrop(allDay, date, dateStr, draggedEl.dataset.event, jsEvent, resource, view);
 
                     draggedEl.parentNode.removeChild(draggedEl);
-                    console.log('removed child');
 
                     if (saved) {
 
