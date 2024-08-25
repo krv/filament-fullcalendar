@@ -60,6 +60,7 @@ export default function fullcalendar({
                 eventWillUnmount,
                 resourceLabelContent,
                 resources: (info, successCallback, failureCallback) => {
+                    console.log('fetching resources');
                     this.$wire.fetchResources({ start: info.start, end: info.end, timeZone: info.timeZone })
                       .then(successCallback)
                       .catch(failureCallback)
