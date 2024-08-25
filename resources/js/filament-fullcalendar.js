@@ -59,14 +59,15 @@ export default function fullcalendar({
                 eventDidMount,
                 eventWillUnmount,
                 resourceLabelContent,
-                resources: (info, successCallback, failureCallback) => {
+                resources: function (fetchInfo, successCallback, failureCallback) {
                     console.log('fetching resources');
-                    console.log(info.start);
-                    console.log(info.end);
+                    console.log(fetchInfo);
+                    console.log(fetchInfo.start);
+                    console.log(fetchInfo.end);
                     console.log('testing ping');
                     console.log(this.$wire.testping())
 
-                    this.$wire.fetchResources({ start: info.start, end: info.end, timeZone: info.timeZone })
+                    this.$wire.fetchResources({ start: fetchInfo.start, end: fetchInfo.end, timeZone: fetchInfo.timeZone })
                       .then(successCallback)
                       .catch(failureCallback)
                 },
