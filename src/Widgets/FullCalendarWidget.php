@@ -45,6 +45,10 @@ class FullCalendarWidget extends Widget implements HasForms, HasActions
         return Actions\ViewAction::make();
     }
 
+    /**
+     * FullCalendar will call this function whenever it needs new resource data.
+     * @param array{start: string, end: string, timezone: string} $info
+     */
     public function fetchResources(array $info): array
     {
         return [];

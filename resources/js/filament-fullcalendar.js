@@ -60,7 +60,7 @@ export default function fullcalendar({
                 eventWillUnmount,
                 resourceLabelContent,
                 resources: (info, successCallback, failureCallback) => {
-                    this.$wire.fetchResources({ start: info.startStr, end: info.endStr, timezone: info.timeZone })
+                    this.$wire.fetchResources({ start: info.start, end: info.end, timeZone: info.timeZone })
                       .then(successCallback)
                       .catch(failureCallback)
                 },
@@ -104,8 +104,11 @@ export default function fullcalendar({
                 drop: async ({ allDay, date, dateStr, draggedEl, jsEvent, resource, view}) => {
                     let saved = this.$wire.onDrop(allDay, date, dateStr, draggedEl.dataset.event, jsEvent, resource, view);
 
+                    draggedEl.parentNode.removeChild(draggedEl);
+                    console.log('removed child');
+
                     if (saved) {
-                        draggedEl.parentNode.removeChild(draggedEl);
+
                         calendar.refetchEvents();
                     }
                 },
