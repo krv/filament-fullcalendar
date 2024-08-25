@@ -105,6 +105,7 @@ export default function fullcalendar({
                     let saved = this.$wire.onDrop(allDay, date, dateStr, draggedEl.dataset.event, jsEvent, resource, view);
 
                     if (saved) {
+                        draggedEl.parentNode.removeChild(draggedEl);
                         calendar.refetchEvents();
                     }
                 },
