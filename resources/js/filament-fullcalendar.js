@@ -59,9 +59,8 @@ export default function fullcalendar({
                 eventDidMount,
                 eventWillUnmount,
                 resourceLabelContent,
-                resources: function (fetchInfo, successCallback, failureCallback) {
+                resources: (fetchInfo, successCallback, failureCallback) => {
                     console.log('fetching resources');
-                    console.log(fetchInfo);
                     console.log(fetchInfo.start);
                     console.log(fetchInfo.end);
                     console.log('testing ping');
