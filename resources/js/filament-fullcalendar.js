@@ -54,7 +54,6 @@ export default function fullcalendar({
                 selectable,
                 ...config,
                 locales,
-                resourceGroupLabelDidMount,
                 eventClassNames,
                 eventContent,
                 eventDidMount,
@@ -115,6 +114,13 @@ export default function fullcalendar({
                 eventReceive: ({ event, relatedEvents, revert, draggedEl, view }) => {
                     event.remove()
                 },
+                resourceGroupLabelDidMount: function(info) {
+                    console.log('resource group did mount');
+                    if (info.resource.extendedProps.expanded) {
+                      // Expand just this resource group
+                      info.resource.setExpanded(true);
+                    }
+                  }
             })
 
             calendar.render()
