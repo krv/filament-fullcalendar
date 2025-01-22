@@ -24,7 +24,7 @@ export default function fullcalendar({
     config,
     editable,
     selectable,
-    datesDidMount,
+    resourceGroupLabelDidMount,
     eventClassNames,
     eventContent,
     eventDidMount,
