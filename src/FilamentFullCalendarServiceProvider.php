@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saade\FilamentFullCalendar;
 
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Css;
-use Filament\Support\Facades\FilamentAsset;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -18,30 +19,30 @@ class FilamentFullCalendarServiceProvider extends PackageServiceProvider
     {
         $package
             ->name(static::$name)
-            ->hasViews();
+            ->hasViews()
+            ->hasAssets();
     }
 
     public function packageBooted(): void
     {
-        FilamentAsset::register(
-            $this->getAssets(),
-            $this->getAssetPackageName(),
-        );
+        $this->loadAssets();
     }
 
-    protected function getAssetPackageName(): ?string
+    protected function loadAssets(): void
     {
-        return 'saade/filament-fullcalendar';
+        $this->loadAlpineComponents();
+        $this->loadStylesheets();
     }
 
-    /**
-     * @return array<Asset>
-     */
-    protected function getAssets(): array
+    protected function loadAlpineComponents(): void
     {
-        return [
-            AlpineComponent::make('filament-fullcalendar-alpine', __DIR__ . '/../dist/filament-fullcalendar.js'),
-            Css::make('filament-fullcalendar-styles', __DIR__ . '/../dist/filament-fullcalendar.css'),
-        ];
+        AlpineComponent::make('filament-fullcalendar-alpine', __DIR__ . '/../dist/filament-fullcalendar.js')
+            ->loadedOnRequest();
+    }
+
+    protected function loadStylesheets(): void
+    {
+        Css::make('filament-fullcalendar-styles', __DIR__ . '/../dist/filament-fullcalendar.css')
+            ->loadedOnRequest();
     }
 }

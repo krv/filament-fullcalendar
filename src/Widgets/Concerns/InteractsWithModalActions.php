@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saade\FilamentFullCalendar\Widgets\Concerns;
 
 use Closure;
@@ -24,7 +26,7 @@ trait InteractsWithModalActions
         /** @var array<string, Action | ActionGroup> */
         $actions = Action::configureUsing(
             Closure::fromCallable([$this, 'configureAction']),
-            fn (): array => $this->modalActions(),
+            fn (): array => $this->getModalActions(),
         );
 
         foreach ($actions as $action) {
@@ -64,7 +66,7 @@ trait InteractsWithModalActions
     /**
      * @return array<Action | ActionGroup>
      */
-    protected function modalActions(): array
+    protected function getModalActions(): array
     {
         return [];
     }

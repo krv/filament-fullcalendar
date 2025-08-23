@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saade\FilamentFullCalendar\Actions;
 
 use Filament\Actions\DeleteAction as BaseDeleteAction;
@@ -20,10 +22,7 @@ class DeleteAction extends BaseDeleteAction
         );
 
         $this->after(
-            function (FullCalendarWidget $livewire) {
-                $livewire->record = null;
-                $livewire->refreshRecords();
-            }
+            fn (FullCalendarWidget $livewire) => $livewire->refreshRecords()
         );
 
         $this->cancelParentActions();

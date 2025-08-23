@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saade\FilamentFullCalendar\Widgets;
 
 use Filament\Actions\Action;
@@ -25,14 +27,14 @@ class FullCalendarWidget extends Widget implements HasForms, HasActions
 
     protected int | string | array $columnSpan = 'full';
 
-    protected function headerActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\CreateAction::make(),
         ];
     }
 
-    protected function modalActions(): array
+    protected function getModalActions(): array
     {
         return [
             Actions\EditAction::make(),
@@ -40,7 +42,7 @@ class FullCalendarWidget extends Widget implements HasForms, HasActions
         ];
     }
 
-    protected function viewAction(): Action
+    protected function getViewAction(): Action
     {
         return Actions\ViewAction::make();
     }

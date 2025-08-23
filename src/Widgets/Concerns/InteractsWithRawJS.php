@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saade\FilamentFullCalendar\Widgets\Concerns;
 
 trait InteractsWithRawJS
@@ -12,11 +14,9 @@ trait InteractsWithRawJS
      *
      * @return string
      */
-    public function eventClassNames(): string
+    public function eventClassNames(): ?string
     {
-        return <<<JS
-            null
-        JS;
+        return null;
     }
 
     /**
@@ -27,11 +27,9 @@ trait InteractsWithRawJS
      *
      * @return string
      */
-    public function eventContent(): string
+    public function eventContent(): ?string
     {
-        return <<<JS
-            null
-        JS;
+        return null;
     }
 
     /**
@@ -41,11 +39,9 @@ trait InteractsWithRawJS
      *
      * @return string
      */
-    public function eventDidMount(): string
+    public function eventDidMount(): ?string
     {
-        return <<<JS
-            null
-        JS;
+        return null;
     }
 
     /**
@@ -55,17 +51,13 @@ trait InteractsWithRawJS
      *
      * @return string
      */
-    public function eventWillUnmount(): string
+    public function eventWillUnmount(): ?string
     {
-        return <<<JS
-            null
-        JS;
+        return null;
     }
 
-    public function resourceLabelContent(): string
+    public function resourceLabelContent(): ?string
     {
-        return <<<JS
-            null
-        JS;
+        return null;
     }
 }

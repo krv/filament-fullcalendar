@@ -1,91 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saade\FilamentFullCalendar\Widgets\Concerns;
 
-use function Filament\Support\get_model_label;
-
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-
-use Livewire\Attributes\Locked;
 
 trait InteractsWithRecords
 {
-    #[Locked]
-    public Model | string | null $model = null;
+    protected ?Model $record = null;
 
-    protected ?string $modelLabel = null;
+    protected ?string $model = null;
 
-    #[Locked]
-    public Model | int | string | null $record;
-
-    protected static ?string $recordRouteKeyName = null;
-
-    protected function resolveRecord(int | string $key): Model
+    public function getRecord(): ?Model
     {
-        $record = $this->resolveRecordRouteBinding($key);
-
-        if ($record === null) {
-            throw (new ModelNotFoundException())->setModel($this->getModel(), [$key]);
-        }
-
-        return $record;
+        return $this->record;
     }
 
     public function getModel(): ?string
     {
-        $model = $this->model;
-
-        if ($model instanceof Model) {
-            return $model::class;
-        }
-
-        if (filled($model)) {
-            return $model;
-        }
-
-        return null;
+        return $this->model;
     }
 
-    public function getRecord(): ?Model
+    protected function resolveRecord(int|string $id): ?Model
     {
-        $record = $this->record;
-
-        if ($record instanceof Model) {
-            return $record;
-        }
-
-        if (is_string($record)) {
+        if (! $this->getModel()) {
             return null;
         }
 
-        return null;
+        return app($this->getModel())->find($id);
     }
 
-    public function resolveRecordRouteBinding(int | string $key): ?Model
+    protected function setRecord(?Model $record): void
     {
-        return app($this->getModel())
-            ->resolveRouteBindingQuery($this->getEloquentQuery(), $key, $this->getRecordRouteKeyName())
-            ->first();
+        $this->record = $record;
     }
 
-    protected function getEloquentQuery(): Builder
+    protected function setModel(string $model): void
     {
-        $query = app($this->getModel())::query();
-
-        // TODO: Scope query to tenant.
-
-        return $query;
-    }
-
-    protected function getRecordRouteKeyName(): ?string
-    {
-        return static::$recordRouteKeyName;
-    }
-
-    protected function getModelLabel(): string
-    {
-        return $this->modelLabel ?? get_model_label($this->getModel());
+        $this->model = $model;
     }
 }

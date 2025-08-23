@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saade\FilamentFullCalendar\Actions;
 
 use Filament\Actions\CreateAction as BaseCreateAction;

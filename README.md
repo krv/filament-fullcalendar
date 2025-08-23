@@ -1,114 +1,26 @@
 # Filament FullCalendar
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/saade/filament-fullcalendar.svg?style=flat-square)](https://packagist.org/packages/saade/filament-fullcalendar)
-[![Total Downloads](https://img.shields.io/packagist/dt/saade/filament-fullcalendar.svg?style=flat-square)](https://packagist.org/packages/saade/filament-fullcalendar)
+The Most Popular JavaScript Calendar integrated with Filament 💛
 
-<p align="center">
-    <img src="https://raw.githubusercontent.com/saade/filament-fullcalendar/3.x/art/cover.png" alt="Filament FullCalendar" style="width: 100%; max-width: 800px; border-radius: 10px" />
-</p>
+## Requirements
 
-# Features
+- PHP 8.2+
+- Laravel 11+
+- Filament 4.0+
 
--   Highly customizable
--   Modals for viewing, creating, editing and deleteing events <sup>Powered by Filament Actions</sup>
--   Filament-y theme
--   and much more!
-
-<br>
-
-# Table of contents
-
-- [Filament FullCalendar](#filament-fullcalendar)
-- [Features](#features)
-- [Table of contents](#table-of-contents)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Returning events](#returning-events)
-  - [The EventData class](#the-eventdata-class)
-- [Configuration](#configuration)
-  - [Available methods](#available-methods)
-    - [schedulerLicenseKey(`string` | `null` $licenseKey)](#schedulerlicensekeystring--null-licensekey)
-    - [selectable(`bool` $selectable)](#selectablebool-selectable)
-    - [editable(`bool` $editable)](#editablebool-editable)
-    - [timezone(`string` | `null` $timezone)](#timezonestring--null-timezone)
-    - [locale(`string` | `null` $locale)](#localestring--null-locale)
-    - [plugins(`array` $plugins, `bool` $merge)](#pluginsarray-plugins-bool-merge)
-    - [config(`array` $config)](#configarray-config)
-- [Interacting with actions](#interacting-with-actions)
-    - [Customizing actions](#customizing-actions)
-    - [Authorizing actions](#authorizing-actions)
-- [Intercepting events](#intercepting-events)
-- [Render Hooks](#render-hooks)
-- [Tricks](#tricks)
-  - [Editing event after drag and drop](#editing-event-after-drag-and-drop)
-  - [Creating events on day selection](#creating-events-on-day-selection)
-  - [Creating events with additional data](#creating-events-with-additional-data)
-  - [Event tooltip on hover](#event-tooltip-on-hover)
-  - [Adding the widget to a Blade view](#adding-the-widget-to-a-blade-view)
-  - [Share your tricks](#share-your-tricks)
-- [Changelog](#changelog)
-- [Contributing](#contributing)
-- [Security Vulnerabilities](#security-vulnerabilities)
-- [Credits](#credits)
-- [License](#license)
-
-<br>
-
-# Installation
+## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require saade/filament-fullcalendar:^3.0
+composer require saade/filament-fullcalendar
 ```
 
-<br>
+## Usage
 
-# Usage
+### 1. Create a Widget
 
-1. First, create a [Filament Widget](https://filamentadmin.com/docs/2.x/admin/dashboard#getting-started):
-
-```bash
-php artisan make:filament-widget CalendarWidget
-```
-
-> This will create a new widget class in your project.
-
-<br>
-
-1. Your newly created widget should extends the `Saade\FilamentFullCalendar\Widgets\FullCalendarWidget` class of this package
-
-> **Warning**
->
-> Don't forget to remove `protected static string $view` from the generated class!
-
-Your widget should look like this:
-```php
-<?php
-
-namespace App\Filament\Widgets;
-
-use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
-
-class CalendarWidget extends FullCalendarWidget
-{
-    /**
-     * FullCalendar will call this function whenever it needs new event data.
-     * This is triggered when the user clicks prev/next or switches views on the calendar.
-     */
-    public function fetchEvents(array $fetchInfo): array
-    {
-        // You can use $fetchInfo to filter events by date.
-        // This method should return an array of event-like objects. See: https://github.com/saade/filament-fullcalendar/blob/3.x/#returning-events
-        // You can also return an array of EventData objects. See: https://github.com/saade/filament-fullcalendar/blob/3.x/#the-eventdata-class
-        return [];
-    }
-}
-```
-
-## Returning events
-
-The `fetchEvents` method should return an array of event-like objects. See: [FullCalendar Docs](https://fullcalendar.io/docs/event-object)
+Create a new widget that extends `FullCalendarWidget`:
 
 ```php
 <?php
@@ -116,86 +28,62 @@ The `fetchEvents` method should return an array of event-like objects. See: [Ful
 namespace App\Filament\Widgets;
 
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
-use App\Filament\Resources\EventResource;
+use Saade\FilamentFullCalendar\Data\EventData;
 use App\Models\Event;
 
 class CalendarWidget extends FullCalendarWidget
 {
-
-    public function fetchEvents(array $fetchInfo): array
+    protected function getModel(): string
     {
-        return Event::query()
-            ->where('starts_at', '>=', $fetchInfo['start'])
-            ->where('ends_at', '<=', $fetchInfo['end'])
-            ->get()
-            ->map(
-                fn (Event $event) => [
-                    'title' => $event->id,
-                    'start' => $event->starts_at,
-                    'end' => $event->ends_at,
-                    'url' => EventResource::getUrl(name: 'view', parameters: ['record' => $event]),
-                    'shouldOpenUrlInNewTab' => true
-                ]
-            )
-            ->all();
+        return Event::class;
     }
-}
-```
 
-<br>
-
-## The EventData class
-
-If you want a fluent way to return events, you can use the `Saade\FilamentFullCalendar\Data\EventData` class.
-
-```php
-<?php
-
-namespace App\Filament\Widgets;
-
-use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
-use App\Filament\Resources\EventResource;
-use App\Models\Event;
-
-class CalendarWidget extends FullCalendarWidget
-{
-
-    public function fetchEvents(array $fetchInfo): array
+    public function fetchEvents(array $info): array
     {
         return Event::query()
-            ->where('starts_at', '>=', $fetchInfo['start'])
-            ->where('ends_at', '<=', $fetchInfo['end'])
+            ->where('start', '>=', $info['start'])
+            ->where('end', '<=', $info['end'])
             ->get()
-            ->map(
-                fn (Event $event) => EventData::make()
-                    ->id($event->uuid)
-                    ->title($event->name)
-                    ->start($event->starts_at)
-                    ->end($event->ends_at)
-                    ->url(
-                        url: EventResource::getUrl(name: 'view', parameters: ['record' => $event]),
-                        shouldOpenUrlInNewTab: true
-                    )
-            )
+            ->map(function (Event $event) {
+                return EventData::make()
+                    ->id($event->id)
+                    ->title($event->title)
+                    ->start($event->start)
+                    ->end($event->end)
+                    ->allDay($event->all_day)
+                    ->toArray();
+            })
             ->toArray();
     }
+
+    public function getFormSchema(): array
+    {
+        return [
+            Forms\Components\TextInput::make('title')
+                ->required(),
+            Forms\Components\DateTimePicker::make('start')
+                ->required(),
+            Forms\Components\DateTimePicker::make('end')
+                ->required(),
+            Forms\Components\Toggle::make('all_day')
+                ->label('All Day'),
+        ];
+    }
 }
 ```
 
-<br>
+### 2. Register the Widget
 
-# Configuration
-
-Before you can configure the calendar, you'll need to add `FilamentFullcalendarPlugin` to your panel's `plugins` array.
+Register your widget in your panel provider:
 
 ```php
 <?php
 
-namespace App\Providers\Filament;
+namespace App\Providers;
 
+use App\Filament\Widgets\CalendarWidget;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -205,334 +93,121 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ...
+            ->widgets([
+                CalendarWidget::class,
+            ]);
+    }
+}
+```
+
+### 3. Configure the Plugin (Optional)
+
+You can configure the FullCalendar plugin in your panel provider:
+
+```php
+<?php
+
+namespace App\Providers;
+
+use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
+use Filament\Panel;
+use Filament\PanelProvider;
+
+class AdminPanelProvider extends PanelProvider
+{
+    public function panel(Panel $panel): Panel
+    {
+        return $panel
+            ->default()
+            ->id('admin')
+            ->path('admin')
             ->plugin(
                 FilamentFullCalendarPlugin::make()
-                    ->schedulerLicenseKey()
-                    ->selectable()
-                    ->editable()
-                    ->timezone()
-                    ->locale()
-                    ->plugins()
-                    ->config()
+                    ->timezone('UTC')
+                    ->locale('en')
+                    ->editable(true)
+                    ->selectable(true)
+                    ->config([
+                        'headerToolbar' => [
+                            'left' => 'prev,next today',
+                            'center' => 'title',
+                            'right' => 'dayGridMonth,timeGridWeek,timeGridDay',
+                        ],
+                    ])
             );
     }
 }
 ```
 
-```php
-<?php
-namespace App\Filament\Widgets;
+## Features
 
-use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
-use App\Models\Event;
+- ✅ FullCalendar v6 integration
+- ✅ Event creation, editing, and deletion
+- ✅ Drag and drop events
+- ✅ Resize events
+- ✅ Date selection for creating events
+- ✅ Resource scheduling support
+- ✅ Multiple calendar views
+- ✅ Localization support
+- ✅ Timezone support
+- ✅ Customizable styling
+- ✅ Filament v4 compatible
 
-class CalendarWidget extends FullCalendarWidget
-{
-    public Model | string | null $model = Event::class;
+## Configuration
 
-    public function config(): array
-    {
-        return [
-            'firstDay' => 1,
-            'headerToolbar' => [
-                'left' => 'dayGridWeek,dayGridDay',
-                'center' => 'title',
-                'right' => 'prev,next today',
-            ],
-        ];
-    }
-}
-```
+### Plugin Configuration
 
-## Available methods
-
-### schedulerLicenseKey(`string` | `null` $licenseKey)
-Your [FullCalendar Premium License Key](https://fullcalendar.io/docs/premium). (Only required if you're using premium plugins)
-
-`licenceKey` (Default: `null`)
-
-### selectable(`bool` $selectable)
-Allows a user to highlight multiple days or timeslots by clicking and dragging. See: [selectable](https://fullcalendar.io/docs/selectable)
-
-`selectable` (Default: `false`)
-
-### editable(`bool` $editable)
-This determines if the events can be dragged and resized. See: [editable](https://fullcalendar.io/docs/editable)
-
-`editable` (Default: `false`)
-
-### timezone(`string` | `null` $timezone)
-The timezone to use when displaying dates. See: [timezone](https://fullcalendar.io/docs/timeZone)
-
-`timezone` (Default: `config('app.timezone')`)
-
-### locale(`string` | `null` $locale)
-The locale to use when displaying texts and dates. See: [locale](https://fullcalendar.io/docs/locale)
-
-`locale` (Default: `config('app.locale')`)
-
-### plugins(`array` $plugins, `bool` $merge)
-The plugins to enable. You can add more plugins if you wish, or replace the default ones by passing `false` as the second param for the method. 
-Avaliable: `interaction, dayGrid, timeGrid, list, multiMonth, scrollGrid, timeline, adaptive, resource, resourceDayGrid, resourceTimeline, resourceTimeGrid, rrule, moment, momentTimezone`
-See: [plugins](https://fullcalendar.io/docs/plugin-index)
-
-`plugins` Default: `['dayGrid', 'timeGrid']`
-`merge` Default: `true`
-
-### config(`array` $config)
-The configuration of the calendar. Not all configurations have a dedicated fluent method to interact with it, therefore you can pass pretty much any configuration listed in the FullCalendar's TOC. See: [FullCalendar Docs](https://fullcalendar.io/docs#toc)
-
-`config` (Default: `[]`)
-
-<br>
-
-# Interacting with actions
-This packages leverages the power of [Filament Actions](https://filamentphp.com/docs/3.x/actions/overview) to allow you to view, create, edit and delete events.
-
-To get started, you'll need to tell the widget which model it should use to perform the actions, and define a form schema for the view, create and edit actions.
+The plugin supports the following configuration options:
 
 ```php
-<?php
-
-namespace App\Filament\Widgets;
-
-use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
-use App\Models\Event;
-
-class CalendarWidget extends FullCalendarWidget
-{
-    public Model | string | null $model = Event::class;
-
-    public function getFormSchema(): array
-    {
-        return [
-            Forms\Components\TextInput::make('name'),
-
-            Forms\Components\Grid::make()
-                ->schema([
-                    Forms\Components\DateTimePicker::make('starts_at'),
-
-                    Forms\Components\DateTimePicker::make('ends_at'),
-                ]),
-        ];
-    }
-}
+FilamentFullCalendarPlugin::make()
+    ->timezone('UTC')                    // Set timezone
+    ->locale('en')                       // Set locale
+    ->editable(true)                     // Enable event editing
+    ->selectable(true)                   // Enable date selection
+    ->plugins(['dayGrid', 'timeGrid'])   // Configure plugins
+    ->config([                           // Custom FullCalendar config
+        'headerToolbar' => [
+            'left' => 'prev,next today',
+            'center' => 'title',
+            'right' => 'dayGridMonth,timeGridWeek,timeGridDay',
+        ],
+    ])
 ```
 
-> **Note**
-> Please note that the form schema does not need to contain the same fields as the FullCalendar event object. You can add as many fields as your model has.
+### Widget Configuration
 
-That's it! Now you can view, create, edit and delete events.
+Your widget can override the following methods:
 
-### Customizing actions
+- `getModel()` - Return the model class for events
+- `fetchEvents(array $info)` - Return events for the given date range
+- `fetchResources(array $info)` - Return resources for resource scheduling
+- `getFormSchema()` - Return the form schema for creating/editing events
+- `getHeaderActions()` - Return header actions
+- `getModalActions()` - Return modal actions
 
-If you want to customize the actions, you can override the default actions that comes with this package. Actions behaves like any other Filament Action, therefore you can customize them as you wish the same way you would customize any other Filament Action.
+## Events
 
-```php
-<?php
+The widget provides several event handlers:
 
-namespace App\Filament\Widgets;
+- `onEventClick(array $event)` - Called when an event is clicked
+- `onEventDrop(array $event, array $oldEvent, ...)` - Called when an event is dropped
+- `onEventResize(array $event, array $oldEvent, ...)` - Called when an event is resized
+- `onDateSelect(string $start, ?string $end, bool $allDay, ...)` - Called when a date is selected
 
-use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
-use Saade\FilamentFullCalendar\Actions;
-use App\Models\Event;
+## Styling
 
-class CalendarWidget extends FullCalendarWidget
-{
-    public Model | string | null $model = Event::class;
+The package includes Tailwind CSS styles that are automatically loaded. You can customize the appearance by overriding the CSS classes or by providing custom styles.
 
-    protected function headerActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
+## Contributing
 
-    protected function modalActions(): array
-    {
-        return [
-            Actions\EditAction::make(),
-            Actions\DeleteAction::make(),
-        ];
-    }
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-    protected function viewAction(): Action
-    {
-        return Actions\ViewAction::make();
-    }
+## Credits
 
-    public function getFormSchema(): array
-    {
-        return [
-            Forms\Components\TextInput::make('name'),
+- [Saade](https://github.com/saade)
+- [All Contributors](../../contributors)
 
-            Forms\Components\Grid::make()
-                ->schema([
-                    Forms\Components\DateTimePicker::make('starts_at'),
-
-                    Forms\Components\DateTimePicker::make('ends_at'),
-                ]),
-        ];
-    }
-}
-```
-
-### Authorizing actions
-
-Action authorization behaves like any other Filament Action, therefore you can customize them as you wish the same way you would customize any other Filament Action.
-
-<br>
-
-# Intercepting events
-
-If you want to intercept events, you can override the default methods that comes with this package.
-
-> **Warning**
-> If you override any of the methods below, you'll need to call the parent method to keep the calendar working as expected.
-
-See the [InteractsWithEvents](https://github.com/saade/filament-fullcalendar/blob/3.x/src/Widgets/Concerns/InteractsWithEvents.php) for all the available event listeners.
-
-<br>
-
-# Render Hooks
-
-If you want to customize the calendar's event rendering, you can use Fullcalendar's built in [Render Hooks](https://fullcalendar.io/docs/event-render-hooks) for that. All the hooks are supported.
-
-Here's an example of how you can use the `eventDidMount` hook to add a custom implementation:
-```php
-    public function eventDidMount(): string
-    {
-        return <<<JS
-            function({ event, timeText, isStart, isEnd, isMirror, isPast, isFuture, isToday, el, view }){
-                // Write your custom implementation here
-            }
-        JS;
-    }
-```
-
-For another example, see the [Event tooltip on hover](#event-tooltip-on-hover) trick.
-
-<br>
-
-# Tricks
-
-## Editing event after drag and drop
-
-You can fill the form with the event's new data by using the `mountUsing` method on the `EditAction`.
-
-```php
-protected function modalActions(): array
- {
-     return [
-         Actions\EditAction::make()
-             ->mountUsing(
-                 function (Event $record, Forms\Form $form, array $arguments) {
-                     $form->fill([
-                         'name' => $record->name,
-                         'starts_at' => $arguments['event']['start'] ?? $record->starts_at,
-                         'ends_at' => $arguments['event']['end'] ?? $record->ends_at
-                     ]);
-                 }
-             ),
-         Actions\DeleteAction::make(),
-     ];
- }
-```
-
-## Creating events on day selection
-
-You can fill the form with the selected day's date by using the `mountUsing` method on the `CreateAction`.
-
-```php
-use Saade\FilamentFullCalendar\Actions\CreateAction;
-
-protected function headerActions(): array
- {
-     return [
-         Actions\CreateAction::make()
-             ->mountUsing(
-                 function (Forms\Form $form, array $arguments) {
-                     $form->fill([
-                         'starts_at' => $arguments['start'] ?? null,
-                         'ends_at' => $arguments['end'] ?? null
-                     ]);
-                 }
-             )
-     ];
- }
-```
-
-## Creating events with additional data
-
-You can add additional data to the event by using the `mutateFormDataUsing` method on the `CreateAction`.
-
-```php
-protected function headerActions(): array
- {
-     return [
-         Actions\CreateAction::make()
-             ->mutateFormDataUsing(function (array $data): array {
-                 return [
-                     ...$data,
-                     'calendar_id' => $this->record->id
-                 ];
-             })
-     ];
- }
-```
-
-## Event tooltip on hover
-
-You can add a tooltip to fully show the event title when the user hovers over the event via JavaScript on the `eventDidMount` method:
-
-```php
-public function eventDidMount(): string
-{
-    return <<<JS
-        function({ event, timeText, isStart, isEnd, isMirror, isPast, isFuture, isToday, el, view }){
-            el.setAttribute("x-tooltip", "tooltip");
-            el.setAttribute("x-data", "{ tooltip: '"+event.title+"' }");
-        }
-    JS;
-}
-```
-
-The JavaScript code returned by `eventDidMount()` will be added to [the FullCalendar's `eventDidMount` event render hook](https://fullcalendar.io/docs/event-render-hooks).
-
-## Adding the widget to a Blade view
-
-Follow the [Filament Docs](https://filamentphp.com/docs/3.x/widgets/adding-a-widget-to-a-blade-view) to know how to add the widget to a Blade view.
-
-## Share your tricks
-
-If you have any tricks that you want to share, please open a PR and add it to this section.
-
-<br>
-
-# Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-# Contributing
-
-Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
-
-# Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-# Credits
-
--   [Saade](https://github.com/saade)
--   [All Contributors](../../contributors)
-
-# License
+## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
-<p align="center">
-    <a href="https://github.com/sponsors/saade">
-        <img src="https://raw.githubusercontent.com/saade/filament-fullcalendar/3.x/art/sponsor.png" alt="Sponsor Saade" style="width: 100%; max-width: 800px;" />
-    </a>
-</p>

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saade\FilamentFullCalendar\Data;
 
 use DateTimeInterface;
@@ -63,7 +65,7 @@ class EventData implements Arrayable
     }
 
     /**
-     * Events can be associated with a resource when its resourceId property matches one of the resource object’s id field.
+     * Events can be associated with a resource when its resourceId property matches one of the resource object's id field.
      */
     public function resourceId(int|string $resourceId): static
     {
@@ -83,7 +85,7 @@ class EventData implements Arrayable
     }
 
     /**
-     * Determines if the event is shown in the “all-day” section of relevant views. In addition,
+     * Determines if the event is shown in the "all-day" section of relevant views. In addition,
      * if true the time text is not displayed with the event.
      */
     public function allDay(bool $allDay = true): static
@@ -104,7 +106,7 @@ class EventData implements Arrayable
     }
 
     /**
-     * Date object that obeys the current timeZone. When an event ends. It’s exclusive. It could be null if an end wasn’t specified.
+     * Date object that obeys the current timeZone. When an event ends. It's exclusive. It could be null if an end wasn't specified.
      * This value is exclusive. For example, an event with the end of 2018-09-03 will appear to span through 2018-09-02 but end before the start of 2018-09-03.
      */
     public function end(DateTimeInterface|string|null $end): static

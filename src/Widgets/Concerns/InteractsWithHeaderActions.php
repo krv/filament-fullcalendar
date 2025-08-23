@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saade\FilamentFullCalendar\Widgets\Concerns;
 
 use Closure;
@@ -24,7 +26,7 @@ trait InteractsWithHeaderActions
         /** @var array<string, Action | ActionGroup> */
         $actions = Action::configureUsing(
             Closure::fromCallable([$this, 'configureAction']),
-            fn (): array => $this->headerActions(),
+            fn (): array => $this->getHeaderActions(),
         );
 
         foreach ($actions as $action) {
@@ -64,7 +66,7 @@ trait InteractsWithHeaderActions
     /**
      * @return array<Action | ActionGroup>
      */
-    protected function headerActions(): array
+    protected function getHeaderActions(): array
     {
         return [];
     }
